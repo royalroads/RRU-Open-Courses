@@ -15,17 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php, controls upgrades for RRU Open Courses plug-in
+ * Definition of RRU Open Courses scheduled task(s).
  *
- * 2014-02-19
- * @package      plug-in
- * @subpackage   rruopencourses
- * @copyright    2014 Gerald Albion, Royal Roads University
- * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   rru_opencourses
+ * @category  task
+ * @copyright 2015 Royal Roads University
+ * @author    Gerald Albion
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015071600;
-$plugin->requires  = 2014051208;      // Requires Moodle version 2.7.8.
-$plugin->component = 'local_rruopencourses';
+$tasks = array(
+    array(
+        'classname' => 'local_rruopencourses\task\opencourses',
+        'blocking'  => 0,     // Non-blocking.
+        'minute'    => '30',  // 03:30 daily.
+        'hour'      => '3',
+        'day'       => '*',
+        'dayofweek' => '*',
+        'month'     => '*'
+    )
+);

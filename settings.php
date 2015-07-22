@@ -19,32 +19,31 @@
  * This file controls the settings for the rruopencourses plugin.
  *
  * 2013-09-25
- * @author       Gerald Albion
  * @package      plug-in
  * @subpackage   rruopencourses
- * @copyright    Royal Roads University
+ * @copyright    2013 Gerald albion, Royal Roads University
  * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 global $DB, $CFG;
 
-if ($hassiteconfig) { // needs this condition or there is error on login page
-    $settingspagetitle = get_string('settingspagetitle','local_rruopencourses');
+if ($hassiteconfig) { // Needs this condition or there is error on login page.
+    $settingspagetitle = get_string('settingspagetitle', 'local_rruopencourses');
     $settings = new admin_settingpage('local_rruopencourses', $settingspagetitle);
     $ADMIN->add('localplugins', $settings);
 
     // Setting: The number of days prior to course start date to make the course available to students
     // (0 = course start date)
-    $settings->add(new admin_setting_configtext('roc_opencoursedate', // setting name
+    $settings->add(new admin_setting_configtext('local_rruopencourses/roc_opencoursedate', // setting name
         get_string('opendatelabel', 'local_rruopencourses'), // display name
         get_string('opendatehelp', 'local_rruopencourses'), // description
         0, // default value
-        PARAM_INT)); // value type
+        PARAM_INT)); // Value type.
 
     // Setting: Email address(es) of people who should receive notifications of course openings.
     // Multiple addresses should be separated by ';'
-    $settings->add(new admin_setting_configtext('roc_emails', // setting name
+    $settings->add(new admin_setting_configtext('local_rruopencourses/roc_emails', // setting name
         get_string('emailslabel', 'local_rruopencourses'), // display name
         get_string('emailshelp', 'local_rruopencourses'), // description
         '')); // default value - empty.

@@ -29,84 +29,83 @@ global $CFG;
 require_once($CFG->dirroot.'/local/rruopencourses/lib.php');
 
 class local_rruopencourses_testcase extends advanced_testcase {
-public static $includecoverage = array('lib/moodlelib.php');
+    public static $includecoverage = array('lib/moodlelib.php');
 
 
-	/**
-    * If no courses were going to be opened return a string
-    *
-    */
-	public function test_coursetable_empty() {
-		$courses 		= array();
-		$coursetable   	= coursetable($courses);
-		$this->assertEquals('    <p>Although courses were scheduled to open today, no courses were opened.</p>', $coursetable);
-	}
+    /**
+     * If no courses were going to be opened return a string
+     *
+     */
+    public function test_coursetable_empty() {
+        $courses        = array();
+        $coursetable    = coursetable($courses);
+        $this->assertEquals('    <p>Although courses were scheduled to open today, no courses were opened.</p>', $coursetable);
+    }
 
-	/*
-	* Verify that an array is returned when there is an array of courses that
-	* are going to be opened. It checks that the array is not empty.
-	*/
-	public function test_coursetable_nonempty() {
-		$courses 			= array();
-        //Create data for course 1
-		$rowdata        	= new stdClass ();
-		$rowdata->id    	= 100;
-		$rowdata->idnumber 	= 'IHMN440__Y1314P-01';
-		$rowdata->fullname 	= 'TEST Course 1';
-		$courses[]			= $rowdata;
-		//Create data for course 2
-		$rowdata        	= new stdClass ();
-		$rowdata->id    	= 200;
-		$rowdata->idnumber 	= 'BUSA522__Y1314S-01';
-		$rowdata->fullname 	= 'TEST Course 2';
-		$courses[]        	= $rowdata;
+    /**
+     * Verify that an array is returned when there is an array of courses that
+     * are going to be opened. It checks that the array is not empty.
+     */
+    public function test_coursetable_nonempty() {
+        $courses            = array();
+        // Create data for course 1.
+        $rowdata            = new stdClass ();
+        $rowdata->id        = 100;
+        $rowdata->idnumber  = 'IHMN440__Y1314P-01';
+        $rowdata->fullname  = 'TEST Course 1';
+        $courses[]          = $rowdata;
+        // Create data for course 2.
+        $rowdata            = new stdClass ();
+        $rowdata->id        = 200;
+        $rowdata->idnumber  = 'BUSA522__Y1314S-01';
+        $rowdata->fullname  = 'TEST Course 2';
+        $courses[]          = $rowdata;
 
-		$coursetable 		= coursetable($courses);
-		$this->assertNotEmpty($coursetable);
-	}
+        $coursetable        = coursetable($courses);
+        $this->assertNotEmpty($coursetable);
+    }
 
-	/**
-	* Verify that an array is returned and it matches the content that
-	* was created
-	*/
-	public function test_coursetable_content() {
-		global $CFG;
-		$courses = array();
-		$contentrows = '';
-		$contenthead =  get_string('emailgridhead', 'local_rruopencourses');
-		$contentfoot =  get_string('emailgridfoot', 'local_rruopencourses');
-		$rowdata                = new stdClass ();
-		$rowdata->id            = 100;
-		$rowdata->idnumber      = 'IHMN440__Y1314P-01';
-		$rowdata->fullname      = 'TEST Course 1';
-		$rowdata->url      	= $CFG->wwwroot.'/course/view.php?id=100';
-		$courses[]              = $rowdata;
-		$contentrows             = get_string('emailgridrow', 'local_rruopencourses', $rowdata);
-		$content = $contenthead . $contentrows .  $contentfoot;
-		$coursetable = coursetable($courses);
-		$this->assertEquals($content, $coursetable);
-	}
+    /**
+     * Verify that an array is returned and it matches the content that
+     * was created
+     */
+    public function test_coursetable_content() {
+        global $CFG;
+        $courses = array();
+        $contentrows = '';
+        $contenthead = get_string('emailgridhead', 'local_rruopencourses');
+        $contentfoot = get_string('emailgridfoot', 'local_rruopencourses');
+        $rowdata                = new stdClass ();
+        $rowdata->id            = 100;
+        $rowdata->idnumber      = 'IHMN440__Y1314P-01';
+        $rowdata->fullname      = 'TEST Course 1';
+        $rowdata->url           = $CFG->wwwroot.'/course/view.php?id=100';
+        $courses[]              = $rowdata;
+        $contentrows             = get_string('emailgridrow', 'local_rruopencourses', $rowdata);
+        $content = $contenthead . $contentrows .  $contentfoot;
+        $coursetable = coursetable($courses);
+        $this->assertEquals($content, $coursetable);
+    }
 
-	/**
-	* Verify the email functionality for the plugin
-	*/
-	public function test_local_rrusendemailto() {
-		global $CFG;
+    /**
+     * Verify the email functionality for the plugin
+     */
+    public function test_local_rrusendemailto() {
+        global $CFG;
 
-		$headerfields = new stdClass();
-		$headerfields->fromemail   = 'Course Notification <' . $CFG->noreplyaddress . '>';
-		$headerfields->ver         = phpversion();
-		$headers                   = get_string('emailheaders','local_rruopencourses', $headerfields);
+        $headerfields = new stdClass();
+        $headerfields->fromemail   = 'Course Notification <' . $CFG->noreplyaddress . '>';
+        $headerfields->ver         = phpversion();
+        $headers                   = get_string('emailheaders', 'local_rruopencourses', $headerfields);
 
-		$this->resetAfterTest();
+        $this->resetAfterTest();
 
-		$email = 'websystems@royalroads.ca';
+        $email = 'websystems@royalroads.ca';
 
-		$subject = 'Courses opened';
-		$messagetext = '<table><thead><th>ID Number</th><th>Course Name</th></thead><tr><td>IHMN440__Y1314P-01</td><td>Environmental Studies</td></tr></table>';
-		//An email should be sent to the websystems account. Verify the email.
-		$err = local_rrusendmailto($email,$subject,$messagetext,$headers);
-		$this->assertEquals('', $err);
-	}
+        $subject = 'Courses opened';
+        $messagetext = '<table><thead><th>ID Number</th><th>Course Name</th></thead><tr><td>IHMN440__Y1314P-01</td><td>Environmental Studies</td></tr></table>';
+        // An email should be sent to the websystems account. Verify the email.
+        $err = local_rrusendmailto($email, $subject, $messagetext, $headers);
+        $this->assertEquals('', $err);
+    }
 }
-?>

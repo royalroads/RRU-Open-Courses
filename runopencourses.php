@@ -27,11 +27,9 @@
  */
 define('CLI_SCRIPT', true);
 
-// Set up the Moodle environment
+// Set up the Moodle environment.
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 
-// Open the courses
+// Open the courses.
 rruopencourses_run();
-
-?>

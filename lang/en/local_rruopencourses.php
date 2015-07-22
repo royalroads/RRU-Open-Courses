@@ -25,14 +25,14 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-// Settings strings
+// Settings strings.
 $string['settingspagetitle'] = 'RRU Open Courses';
 $string['opendatelabel'] = 'Open course date';
 $string['opendatehelp']  = 'The number of days prior to course start date to make the course available to students<br/>(0 = course start date)';
 $string['emailslabel']   = 'Email';
 $string['emailshelp']    = 'Email address(es) of people who should receive notifications of course openings.<br/>Multiple addresses should be separated by \';\'';
 
-// Notification email components - body
+// Notification email components - body.
 $string['emailbody']      = "<html>\r\n"
                           . "  <head>\r\n"
                           . "    <title>Courses opened to students today</title>\r\n"
@@ -59,13 +59,13 @@ $string['emailfail']     = "    <p>\r\n"
 $string['emailfoot']     = "  </body>\r\n"
                           . "</html>";
 
-// Notification email components - grid of courses within notification body
+// Notification email components - grid of courses within notification body.
 $string['emailgridhead']  = '      <br/>'
                           . '      <table>' ."\r\n"
                           . '        <thead>' ."\r\n"
-                          .	'           <th>ID Number</th>' ."\r\n"
-                         .	'           <th>Course Name</th>' ."\r\n"
-                         . '         </thead>' . "\r\n";
+                          . '           <th>ID Number</th>' ."\r\n"
+                          . '           <th>Course Name</th>' ."\r\n"
+                          . '         </thead>' . "\r\n";
 
 $string['emailgridrow'] = '        <tr>' ."\r\n"
                           . '          <td>' ."\r\n"
@@ -76,18 +76,21 @@ $string['emailgridrow'] = '        <tr>' ."\r\n"
                           . '          </td>' ."\r\n"
                           . '        </tr>' . "\r\n";
 
-$string['emailgridfoot']= '      </table>' . "\r\n";
+$string['emailgridfoot'] = '      </table>' . "\r\n";
 
 $string['nocourses']     = '    <p>Although courses were scheduled to open today, no courses were opened.</p>';
 
-// Notification email components - subject
+// Notification email components - subject.
 $string['emailsubj']     = '{$a->date} - Courses opened';
 
 
-// Notification email components - mail headers
+// Notification email components - mail headers.
 $string['emailheaders']  = 'MIME-Version: 1.0' . "\r\n"
                           . 'Content-type: text/html; charset=iso-8859-1' . "\r\n"
                           . 'From: {$a->fromemail}' . "\r\n"
                           . 'Reply-To: {$a->fromemail}' . "\r\n"
                           . 'X-Mailer: PHP/{$a->ver}';
 $string['pluginname'] = 'RRU Open Courses';
+
+// Descriptive title to show in scheduled tasks admin page.
+$string['crontitle']  = 'Auto Open Courses';

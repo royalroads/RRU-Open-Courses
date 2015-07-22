@@ -17,11 +17,10 @@
 /**
  * This library does the actual work of opening the courses whose start date is today.
  *
- * 2014-02-19
- * @author		  Gerald Albion
+ * 2014-04-28
  * @package      plug-in
  * @subpackage   rruopencourses
- * @copyright    Royal Roads University
+ * @copyright    2014 Gerald Albion, Royal Roads University
  * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -45,8 +44,8 @@ function coursetable($courses) {
 
     // There is at least one course; build a table.
     $head = get_string('emailgridhead', 'local_rruopencourses');
-    $rows = ''; // init
-    foreach ( $courses as $course ) {
+    $rows = ''; // Init.
+    foreach ($courses as $course) {
         $rowdata           = new stdClass ();
         $rowdata->id       = $course->id;
         $rowdata->idnumber = $course->idnumber;
@@ -70,16 +69,16 @@ function coursetable($courses) {
  * @return string information about the error, or an empty string if no error
  */
 function local_rrusendmailto($email, $emailsubject, $emailbody, $headers) {
-    $mailsuccess = FALSE;
+    $mailsuccess = false;
     $error       = '';
 
-    // Try to send the mail
+    // Try to send the mail.
     $mailsuccess = mail($email, $emailsubject, $emailbody, $headers);
 
     // Mail error?
     if (!$mailsuccess) {
-        $error     = "\n(Error) Failed to send email to ". $email ;
-        $lasterror = "\n" . print_r(error_get_last(),TRUE);
+        $error     = "\n(Error) Failed to send email to ". $email;
+        $lasterror = "\n" . error_get_last();
         if ('' == $lasterror) {
             $lasterror = "\n(No error message specified by PHP)";
         }
@@ -111,18 +110,18 @@ function rruopencourses_run() {
 
     // Security: Is this being called by the Moodle cron?
     // If not, $_SERVER['REMOTE_ADDR'] will be set and we should reject the request.
-    if (array_key_exists('REMOTE_ADDR',$_SERVER)) {
+    if (array_key_exists('REMOTE_ADDR', $_SERVER)) {
         die('Sorry, this function is not available from your location.');
     }
 
-    // Setup: Clear errors
+    // Setup: Clear errors.
     $errors = '';
 
-	// Setup: Get the number of days in advance to open the course
-    $advance = $CFG->roc_opencoursedate * ROC_SEC_PER_DAY;
+    // Setup: Get the number of days in advance to open the course.
+    $advance = get_config('local_rruopencourses', 'roc_opencoursedate') * ROC_SEC_PER_DAY;
 
     // Setup: query to select courses that are due to start but have not been opened yet.
-    $sql_select =
+    $sqlselect =
         "SELECT id, idnumber, fullname
          FROM {course}
          WHERE visible = 0
@@ -130,7 +129,7 @@ function rruopencourses_run() {
          ORDER BY fullname";
 
     // Setup: query to open courses that are due to start but have not been opened yet.
-    $sql_open =
+    $sqlopen =
         "UPDATE {course}
          SET visible = 1
          WHERE visible = 0
@@ -138,7 +137,7 @@ function rruopencourses_run() {
 
     // Build a list of courses that need to be opened now.
     try {
-        $courses_to_open = $DB->get_records_sql($sql_select);
+        $coursestoopen = $DB->get_records_sql($sqlselect);
     } catch (Exception $e) {
         $error = "Error retrieving list of courses to open: " . $e->getMessage () . "<br>";
         $errors .= $error;
@@ -146,16 +145,16 @@ function rruopencourses_run() {
     }
 
     // Were there any courses to open?
-    if (0 == count($courses_to_open)) {
+    if (0 == count($coursestoopen)) {
         print "No courses to open today.\n";
         return;
     }
 
     // Open the courses.
     try {
-        $DB->execute($sql_open);
+        $DB->execute($sqlopen);
     } catch (Exception $e) {
-        $error = "\nError opening courses: " . $e->getMessage () . "\n<br>" . $sql_open . "\n<br>";
+        $error = "\nError opening courses: " . $e->getMessage () . "\n<br>" . $sqlopen . "\n<br>";
         $errors .= $error;
         print $error;
     }
@@ -163,7 +162,7 @@ function rruopencourses_run() {
     // Identify the courses that failed to open.
     // The same query that built our list of courses will return the failed openings now that we have attempted to open them all.
     try {
-        $courses_that_failed = $DB->get_records_sql($sql_select);
+        $coursesthatfailed = $DB->get_records_sql($sqlselect);
     } catch (Exception $e) {
         $error   = "Error retrieving list of courses that failed to open: " . $e->getMessage () . "<br>";
         $errors .= $error;
@@ -174,14 +173,14 @@ function rruopencourses_run() {
     // a list of courses "that actually opened".  This list plus the list of failed
     // openings equals the original list of courses to change.  This is so we can report
     // only the courses that DID open in the email before reporting the ones that failed.
-    foreach ($courses_that_failed as $course_failed) {
-        $id = $course_failed->id;
-        if (isset($courses_to_open [$id])) {
-            unset($courses_to_open [$id]);
+    foreach ($coursesthatfailed as $coursefailed) {
+        $id = $coursefailed->id;
+        if (isset($coursestoopen [$id])) {
+            unset($coursestoopen [$id]);
         }
     }
 
-    // Setup field strings
+    // Setup field strings.
     $todaysdate = date('M j, Y');
 
     // The site's full name is available in Course ID 1 (Thanks, Andy!)
@@ -204,7 +203,7 @@ function rruopencourses_run() {
         }
     }
 
-    // Setup email notification(s)
+    // Setup email notification(s).
     $subjfields                = new stdClass();
     $subjfields->date          = $todaysdate;
     $subjfields->servername    = $servername;
@@ -212,30 +211,30 @@ function rruopencourses_run() {
     $headerfields              = new stdClass();
     $headerfields->fromemail   = 'Course Notification <' . $CFG->noreplyaddress . '>';
     $headerfields->ver         = phpversion();
-    $headers                   = get_string('emailheaders','local_rruopencourses', $headerfields);
+    $headers                   = get_string('emailheaders', 'local_rruopencourses', $headerfields);
 
     // Build a notification email body. This will be sent to each email address in the settings.
     $bodyfields                = new stdClass();
     $bodyfields->servername    = $servername;
-    $bodyfields->coursetable   = coursetable ($courses_to_open);
+    $bodyfields->coursetable   = coursetable ($coursestoopen);
     $emailbody                 = get_string ('emailbody', 'local_rruopencourses', $bodyfields);
 
     // Were there failed openings?  If so, add the fail section to the email body.
-    if (0 != count($courses_that_failed)) {
+    if (0 != count($coursesthatfailed)) {
         // Build the optional fail section of the email body.
         $failfields              = new stdClass();
         $failfields->servername  = $servername;
-        $failfields->coursetable = coursetable($courses_that_failed);
+        $failfields->coursetable = coursetable($coursesthatfailed);
         $errortable              = get_string('emailfail', 'local_rruopencourses', $failfields);
         $emailbody              .= $errortable;
         $errors                 .= "<br/>Some courses could not be opened:<br/>" . $errortable . "<br/>";
     }
 
-    // Add the email footer, which appears after the fail section (if any)
-    $emailbody .= get_string('emailfoot','local_rruopencourses');
+    // Add the email footer, which appears after the fail section (if any).
+    $emailbody .= get_string('emailfoot', 'local_rruopencourses');
 
     // Send the notifications.
-    $emaillist = $CFG->roc_emails;
+    $emaillist =  get_config('local_rruopencourses', 'roc_emails');
     $emails = explode(';', $emaillist);
     foreach ($emails as $email) {
         print "\n\nSending mail to $email\n";
@@ -245,14 +244,14 @@ function rruopencourses_run() {
     // Were there errors?  If so, attempt to send one email containing all of them.
     if ('' != $errors) {
         $errors = "<html><head></head><body><p>There were errors opening courses:</p>\n<p>" . $errors . "</p></body></html>";
-        $headers  = get_string('emailheaders','local_rruopencourses', phpversion());
+        $headers  = get_string('emailheaders', 'local_rruopencourses', phpversion());
         $warningerror = local_rrusendmailto($CFG->noreplyaddress, 'Error(s) opening courses', $errors, $headers);
         if ('' != $warningerror) {
             $error = "\n\n*** NOTICE ***\n\n"
                    . "There were error(s) and the module was unable to send an email notification of those errors.\n\n"
                    . "The error sending email was: \n" . $warningerror . "\n\n"
                    . "The original error(s) being reported were:\n" . $errors . "\n\n";
-            file_put_contents('php://stderr', $error); // output all the errors to stderr
+            file_put_contents('php://stderr', $error); // Output all the errors to stderr.
         }
     }
 }
