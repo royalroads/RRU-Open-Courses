@@ -22,9 +22,9 @@
  */
 
 Description of the plugin:
-Formerly, when a course was ready to be made available for students, a staff member had to manually make the course visible.  
-The process of identifying which courses should be made visible and then opening the courses to students had been tedious and error-prone.  
-This plug-in provides that functionality. Its operation is straightforward: Once a day, it checks the course table to determine which courses, 
-if any, are scheduled to start that day.  It then makes those courses visible, and sends a report by email to one or more administrators.  
-Any problems are reported to the site administrator by email.
-This plugin uses the setting number of days in advance to open the course (roc_opencoursedate )and the start date field of the course table to query the database.
+
+In Moodle 2, when a course is ready to be made available for students, an instructor or other staff member must manually make the course visible.  In a large institutional environment with many course offerings starting on varying dates and running concurrently, the process of identifying which courses should be made visible and then opening the courses to students can be tedious and error-prone.  
+
+Although Moodle supports course start dates, there is no core functionality in Moodle to automatically make courses visible to students at the appropriate time.  
+
+This plugin provides that functionality.
