@@ -26,6 +26,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015061700;
-$plugin->requires  = 2014111000;      // Requires Moodle version 2.8
+$plugin->version   = 2015071600;
+$plugin->requires  = 2014051208;      // Requires Moodle version 2.8
 $plugin->component = 'local_rruopencourses';
